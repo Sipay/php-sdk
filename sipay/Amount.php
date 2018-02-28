@@ -190,12 +190,19 @@ class Amount{
         $this->set($amount, $currency);
     }
 
-    public function get_currency($currency){
+    public function get_currency(){
         return $this->currency[0];
     }
 
-    public function get_amount($amount){
-        return $this->$amount;
+    public function get_amount(){
+        return $this->amount;
+    }
+
+    public function get_array(){
+        return array(
+            'amount' => $this->amount,
+            'currency' => $this->currency[0]
+          );
     }
 
     public function set($amount, $currency){
@@ -203,7 +210,7 @@ class Amount{
             throw new \Exception('$currency must be a string.');
         }
 
-        if(!array_key_exists($currency, $this->CURRENCIES)){
+        if(!isset($this->CURRENCIES[$currency])){
             throw new \Exception('$currency don\'t exists.');
         }
 
