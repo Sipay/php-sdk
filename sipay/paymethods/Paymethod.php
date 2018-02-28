@@ -3,5 +3,5 @@ namespace Sipay\Paymethods;
 
 interface Paymethod
 {
-    public function add_to(&$payload);
+    public function to_json();
 }
