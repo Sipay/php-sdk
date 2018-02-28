@@ -69,9 +69,11 @@ class Card implements Paymethod
         return $this->year < $year or ($this->year == $year and $this->month < $month);
     }
 
-    public function add_to(&$payload){
-        $payload['pan'] = $this->card_number;
-        $payload['year'] = $this->year;
-        $payload['month'] = $this->month;
+    public function to_json(){
+        return array(
+          'pan' => $this->card_number,
+          'year' => $this->year,
+          'month' => $this->month
+        );
     }
 }

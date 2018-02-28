@@ -23,7 +23,7 @@ class StoredCard implements Paymethod
         return $this->token;
     }
 
-    public function add_to(&$payload){
-        $payload['token'] = $this->token;
+    public function to_json(){
+        return array('token' => $this->token);
     }
 }

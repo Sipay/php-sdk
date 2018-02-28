@@ -23,7 +23,7 @@ class FastPay implements Paymethod
         return $this->token;
     }
 
-    public function add_to(&$payload){
-        $payload['fastpay'] = array('request_id' => $this->token);
+    public function to_json(){
+        return array('fastpay' => array('request_id' => $this->token));
     }
 }
