@@ -198,8 +198,83 @@ class Ecommerce{
 
     return array($body, $response);
   }
+  private function check_parameter($param, $param_name, $type, $pattern=null, $optional=True){
+    if(gettype($param) != $type && (!$optional || !is_null($param))){
+        throw new \Exception("$param_name incorrect type.");
     }
 
-    return $response;
+    if(gettype($param) == "string" && gettype($pattern) == "string" && !preg_match($pattern, $param)){
+          throw new \Exception("$param_name don't match with pattern.");
+    }
+
   }
+
+    private function clean_parameters($array_options, $array_schema){
+      $options = array();
+      foreach ($array_options as $name => $option) {
+        if(isset($array_schema[$name])){
+            $schema = $array_schema[$name];
+
+            if(gettype($option) != $schema['type']){
+                throw new \Exception("$name incorrect type.");
+            }
+
+            if(is_string($option) && isset($schema['pattern']) && !preg_match($schema['pattern'], $option)){
+                  throw new \Exception("$name don't match with pattern.");
+            }
+
+            $options[$name] = $option;
+        }
+      }
+
+      return $options;
+
+    }
+
+    public function authorization($paymethod, $amount, $array_options = array()){
+
+        if (!is_subclass_of($paymethod, 'Sipay\Paymethods\Paymethod')){
+            throw new \Exception('$paymethod incorrect type.');
+        }
+
+        if(!($amount instanceof \Sipay\Amount)){
+            throw new \Exception('$amount incorrect type.');
+        }
+
+        $array_schema = array(
+            'order' => array(
+                'type' => 'string',
+                'pattern' => '/^[\w-]{6,64}$/'
+            ),
+            'reference' => array(
+                'type' => 'string',
+                'pattern' => '/^[0-9]{4}[a-zA-Z0-9]{0,8}$/'
+            ),
+            'token' => array(
+                'type' => 'string',
+                'pattern' => '/^[\w-]{6,128}$/'
+            ),
+            'custom_01' => array(
+                'type' => 'string'
+            ),
+            'custom_02' => array(
+                'type' => 'string'
+            ),
+          );
+
+        $options = $this->clean_parameters($array_options, $array_schema);
+
+        if(isset($options['reference'])){
+            $options['reconciliation'] = $options['reference'];
+            unset($options['reference']);
+        }
+
+
+        $payload = array_replace($options, $amount->get_array(), $paymethod->to_json());
+
+        $args = $this->send($payload, 'authorization');
+        return new \Sipay\Responses\Authorization($args[0], $args[1]);
+
+    }
+
 }
