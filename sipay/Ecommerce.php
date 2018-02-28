@@ -22,17 +22,17 @@ class Ecommerce{
         $this->logger = new Logger($config['logger']);
 
         $cred = $config['credentials'];
-        $this->setKey(array_key_exists('key', $cred) ? $cred['key'] : '');
-        $this->setSecret(array_key_exists('secret', $cred) ? $cred['secret'] : '');
-        $this->setResource(array_key_exists('resource', $cred) ? $cred['resource'] : '');
+        $this->setKey(isset($cred['key']) ? $cred['key'] : '');
+        $this->setSecret(isset($cred['secret']) ? $cred['secret'] : '');
+        $this->setResource(isset($cred['resource']) ? $cred['resource'] : '');
 
         $api = $config['api'];
-        $this->setEnvironment(array_key_exists('environment', $api) ? $api['environment'] : '');
-        $this->setVersion(array_key_exists('version', $api) ? $api['version'] : '');
-        $this->setMode(array_key_exists('mode', $api) ? $api['mode'] : '');
+        $this->setEnvironment(isset($api['environment']) ? $api['environment'] : '');
+        $this->setVersion(isset($api['version']) ? $api['version'] : '');
+        $this->setMode(isset($api['mode']) ? $api['mode'] : '');
 
         $connection = $config['connection'];
-        $this->setTimeout(array_key_exists('timeout', $connection) ? $connection['timeout'] : '30');
+        $this->setTimeout(isset($connection['timeout']) ? $connection['timeout'] : '30');
     }
 
   	public function getKey(){
@@ -134,9 +134,8 @@ class Ecommerce{
   		$this->timeout = $timeout;
   	}
 
-  public function send($payload, $endpoint){
+    private function send($payload, $endpoint){
     $url = 'https://'.$this->environment.'.sipay.es/mdwr/'.$this->version.'/'.$endpoint;
-    // $url = 'http://localhost:8081/odor/api/v1/verify';
     $data = array(
         'key' => $this->key,
         'nonce' => "".time(),
@@ -158,34 +157,47 @@ class Ecommerce{
       ),
     );
     $context  = stream_context_create($options);
-    $response_body = file_get_contents($url, false, $context);
-
-    if(isset($http_response_header)){
-      if($response_body == ""){
-        $this->logger->error('sipay.request', 'request.response', 'E-0001', 'Request Error', array());
+    try {
+      $response_body = file_get_contents($url, false, $context);
+    } catch (Exception $e) {
+        $this->logger->error('sipay.request', 'request.response', 'E-0004', 'Request Error',
+                             array('error_msg' => $e->getMessage()));
         $response = null;
+        $response_body = null;
+    }
 
-      }else{
-        $is_json = false;
-        foreach($http_response_header as $header){
-          if(substr($header, 0, 30) === "Content-Type: application/json"){
-            $is_json = true;
-            break;
+    if(!is_null($response_body)){
+        if(isset($http_response_header)){
+          if($response_body == ""){
+            $this->logger->error('sipay.request', 'request.response', 'E-0001', 'Request Error', array());
+            $response = null;
+
+          }else{
+            $is_json = false;
+            foreach($http_response_header as $header){
+              if(substr($header, 0, 30) === "Content-Type: application/json"){
+                $is_json = true;
+                break;
+              }
+            }
+
+            if($is_json){
+              $response = json_decode($response_body, True);
+
+            }else{
+              $this->logger->error('sipay.request', 'request.response', 'E-0003', 'Response no json', array());
+              $response = null;
+            }
           }
-        }
-
-        if($is_json){
-          $response = json_decode($response_body);
 
         }else{
-          $this->logger->error('sipay.request', 'request.response', 'E-0003', 'Response no json', array());
+          $this->logger->error('sipay.request', 'request.response', 'E-0002', 'Request Error', array());
           $response = null;
         }
-      }
+    }
 
-    }else{
-      $this->logger->error('sipay.request', 'request.response', 'E-0002', 'Request Error', array());
-      $response = null;
+    return array($body, $response);
+  }
     }
 
     return $response;
