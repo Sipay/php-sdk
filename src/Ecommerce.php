@@ -218,7 +218,3 @@ class Ecommerce
         return array($body, $response);
     }
 }
-
-    return $response;
-  }
-}
