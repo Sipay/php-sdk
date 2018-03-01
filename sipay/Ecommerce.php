@@ -277,4 +277,56 @@ class Ecommerce{
 
     }
 
+    public function refund($identificator, $amount, $array_options = array()){
+        $is_paymethod = is_subclass_of($identificator, 'Sipay\Paymethods\Paymethod');
+        $is_tx_id = gettype($identificator) == "string" && preg_match('/^[0-9]{6,22}$/', $identificator);
+
+        if (!$is_paymethod && !$is_tx_id){
+            throw new \Exception('incorrect $identificator.');
+        }
+
+        if(!($amount instanceof \Sipay\Amount)){
+            throw new \Exception('$amount incorrect type.');
+        }
+
+        $array_schema = array(
+            'order' => array(
+                'type' => 'string',
+                'pattern' => '/^[\w-]{6,64}$/'
+            ),
+            'reference' => array(
+                'type' => 'string',
+                'pattern' => '/^[0-9]{4}[a-zA-Z0-9]{0,8}$/'
+            ),
+            'token' => array(
+                'type' => 'string',
+                'pattern' => '/^[\w-]{6,128}$/'
+            ),
+            'custom_01' => array(
+                'type' => 'string'
+            ),
+            'custom_02' => array(
+                'type' => 'string'
+            ),
+          );
+
+        $options = $this->clean_parameters($array_options, $array_schema);
+
+        if(isset($options['reference'])){
+            $options['reconciliation'] = $options['reference'];
+            unset($options['reference']);
+        }
+
+        if($is_paymethod){
+            $id_array = $identificator->to_json();
+        }else{
+            $id_array = array('transaction_id' => $identificator);
+        }
+
+        $payload = array_replace($options, $amount->get_array(), $id_array);
+
+        $args = $this->send($payload, 'refund');
+        return new \Sipay\Responses\Refund($args[0], $args[1]);
+
+    }
 }
