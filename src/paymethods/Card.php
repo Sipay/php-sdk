@@ -7,7 +7,7 @@ class Card implements Paymethod
     private $year;
     private $month;
 
-    public function __construct($card_number, $year, $month)
+    public function __construct(string $card_number, int $year, int $month)
     {
         $this->set_card_number($card_number);
         $this->set_expiration_date($year, $month);
@@ -18,12 +18,8 @@ class Card implements Paymethod
         return $this->card_number;
     }
 
-    public function set_card_number($card_number)
+    public function set_card_number(string $card_number)
     {
-        if (gettype($card_number) != "string") {
-            throw new \Exception('$card_number must be a string.');
-        }
-
         if(!preg_match("/^[0-9]{14,19}$/", $card_number)) {
             throw new \Exception('$card_number don\'t match with pattern.');
         }
@@ -41,21 +37,13 @@ class Card implements Paymethod
         return $this->month;
     }
 
-    public function set_expiration_date($year, $month)
+    public function set_expiration_date(int $year, int $month)
     {
-        if (gettype($year) != "integer") {
-            throw new \Exception('$year must be a string.');
-        }
-
         if($year < 1000 or $year >9999) {
             throw new \Exception('$year doesn\'t have a correct value.');
         }
 
         $this->year = $year;
-
-        if (gettype($month) != "integer") {
-            throw new \Exception('$month must be a string.');
-        }
 
         if($month < 1 or $month > 12) {
             throw new \Exception('$month doesn\'t have a correct value.');

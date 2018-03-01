@@ -3,17 +3,13 @@ namespace Sipay\Paymethods;
 
 class StoredCard implements Paymethod
 {
-    public function __construct($token)
+    public function __construct(string $token)
     {
         $this->set_token($token);
     }
 
-    public function set_token($token)
+    public function set_token(string $token)
     {
-        if (gettype($token) != "string") {
-            throw new \Exception('$token must be a string.');
-        }
-
         if(!preg_match("/^[\w-]{6,128}$/", $token)) {
             throw new \Exception('$token don\'t match with pattern.');
         }
