@@ -350,4 +350,28 @@ class Ecommerce{
         return new \Sipay\Responses\Register($args[0], $args[1]);
 
     }
+
+    public function card($token){
+        $this->check_parameter($token, '$token', 'string', '/^[\w-]{6,128}$/', False);
+
+        $payload = array(
+          'token' => $token
+        );
+
+        $args = $this->send($payload, 'card');
+        return new \Sipay\Responses\Card($args[0], $args[1]);
+
+    }
+
+    public function unregister($token){
+        $this->check_parameter($token, '$token', 'string', '/^[\w-]{6,128}$/', False);
+
+        $payload = array(
+          'token' => $token
+        );
+
+        $args = $this->send($payload, 'unregister');
+        return new \Sipay\Responses\Unregister($args[0], $args[1]);
+
+    }
 }
