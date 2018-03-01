@@ -21,7 +21,7 @@ Hacer una venta:
   $amount = new \Sipay\Amount(100, "EUR");
   $card = new \Sipay\Paymethods\Card("4242424242424242", 2050, 12);
   $options = array(
-    "order" => "icg-order-test",
+    "order" => "order-test",
     "reference" => "1234",
     "token" => "new-token"
   );
