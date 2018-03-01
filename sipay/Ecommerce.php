@@ -85,7 +85,7 @@ class Ecommerce{
       if (gettype($environment) != "string"){
           throw new \Exception('$environment must be a string.');
       }
-      if(!in_array($environment, array('develop','sandbox', 'staging', 'live'))){
+      if(!in_array($environment, array('sandbox', 'staging', 'live'))){
           throw new \Exception('$environment must be sandbox, staging or live.');
       }
   		$this->environment = $environment;
@@ -135,6 +135,9 @@ class Ecommerce{
   	}
 
     private function send($payload, $endpoint){
+    $this->logger->info('sipay.request', 'request.send', 'I-0001', 'Request Send',
+                         array('payload' => $payload, 'endpoint' => $endpoint));
+
     $url = 'https://'.$this->environment.'.sipay.es/mdwr/'.$this->version.'/'.$endpoint;
     $data = array(
         'key' => $this->key,
@@ -196,20 +199,16 @@ class Ecommerce{
         }
     }
 
+    $this->logger->info('sipay.request', 'request.response', 'I-0002', 'Request Response',
+                         array(
+                           'payload' => $payload,
+                           'endpoint' => $endpoint,
+                           'response' => $response_body));
+
     return array($body, $response);
   }
-  private function check_parameter($param, $param_name, $type, $pattern=null, $optional=True){
-    if(gettype($param) != $type && (!$optional || !is_null($param))){
-        throw new \Exception("$param_name incorrect type.");
-    }
 
-    if(gettype($param) == "string" && gettype($pattern) == "string" && !preg_match($pattern, $param)){
-          throw new \Exception("$param_name don't match with pattern.");
-    }
-
-  }
-
-    private function clean_parameters($array_options, $array_schema){
+    private function clean_parameters(array $array_options, array $array_schema){
       $options = array();
       foreach ($array_options as $name => $option) {
         if(isset($array_schema[$name])){
@@ -231,15 +230,7 @@ class Ecommerce{
 
     }
 
-    public function authorization($paymethod, $amount, $array_options = array()){
-
-        if (!is_subclass_of($paymethod, 'Sipay\Paymethods\Paymethod')){
-            throw new \Exception('$paymethod incorrect type.');
-        }
-
-        if(!($amount instanceof \Sipay\Amount)){
-            throw new \Exception('$amount incorrect type.');
-        }
+    public function authorization(Paymethods\Paymethod $paymethod, Amount $amount, array $array_options = array()){
 
         $array_schema = array(
             'order' => array(
@@ -273,20 +264,16 @@ class Ecommerce{
         $payload = array_replace($options, $amount->get_array(), $paymethod->to_json());
 
         $args = $this->send($payload, 'authorization');
-        return new \Sipay\Responses\Authorization($args[0], $args[1]);
+        return new Responses\Authorization($args[0], $args[1]);
 
     }
 
-    public function refund($identificator, $amount, $array_options = array()){
+    public function refund($identificator, Amount $amount, array $array_options = array()){
         $is_paymethod = is_subclass_of($identificator, 'Sipay\Paymethods\Paymethod');
         $is_tx_id = gettype($identificator) == "string" && preg_match('/^[0-9]{6,22}$/', $identificator);
 
         if (!$is_paymethod && !$is_tx_id){
             throw new \Exception('incorrect $identificator.');
-        }
-
-        if(!($amount instanceof \Sipay\Amount)){
-            throw new \Exception('$amount incorrect type.');
         }
 
         $array_schema = array(
@@ -326,19 +313,19 @@ class Ecommerce{
         $payload = array_replace($options, $amount->get_array(), $id_array);
 
         $args = $this->send($payload, 'refund');
-        return new \Sipay\Responses\Refund($args[0], $args[1]);
+        return new Responses\Refund($args[0], $args[1]);
 
     }
 
-    public function register($card, $token){
-        $is_paymethod = is_subclass_of($card, 'Sipay\Paymethods\Paymethod');
-        $is_stored_card = $card instanceof \Sipay\Paymethods\StoredCard;
+    public function register(Paymethods\Paymethod $card, string $token){
 
-        if (!$is_paymethod || $is_stored_card){
-            throw new \Exception('incorrect $card.');
+        if ($card instanceof Paymethods\StoredCard){
+            throw new \Exception('$card can\'t be StoredCard.');
         }
 
-        $this->check_parameter($token, '$token', 'string', '/^[\w-]{6,128}$/', False);
+        if(!preg_match('/^[\w-]{6,128}$/', $token)){
+            throw new \Exception('$token don\'t match with pattern.');
+        }
 
         $payload = array(
           'token' => $token
@@ -347,62 +334,71 @@ class Ecommerce{
         $payload = array_replace($payload , $card->to_json());
 
         $args = $this->send($payload, 'register');
-        return new \Sipay\Responses\Register($args[0], $args[1]);
+        return new Responses\Register($args[0], $args[1]);
 
     }
 
-    public function card($token){
-        $this->check_parameter($token, '$token', 'string', '/^[\w-]{6,128}$/', False);
+    public function card(string $token){
+        if(!preg_match('/^[\w-]{6,128}$/', $token)){
+            throw new \Exception('$token don\'t match with pattern.');
+        }
 
         $payload = array(
           'token' => $token
         );
 
         $args = $this->send($payload, 'card');
-        return new \Sipay\Responses\Card($args[0], $args[1]);
+        return new Responses\Card($args[0], $args[1]);
 
     }
 
-    public function unregister($token){
-        $this->check_parameter($token, '$token', 'string', '/^[\w-]{6,128}$/', False);
+    public function unregister(string $token){
+        if(!preg_match('/^[\w-]{6,128}$/', $token)){
+            throw new \Exception('$token don\'t match with pattern.');
+        }
 
         $payload = array(
           'token' => $token
         );
 
         $args = $this->send($payload, 'unregister');
-        return new \Sipay\Responses\Unregister($args[0], $args[1]);
+        return new Responses\Unregister($args[0], $args[1]);
 
     }
 
-    public function cancellation($transaction_id){
-        $this->check_parameter($transaction_id, '$transaction_id', 'string', '/^[0-9]{6,22}$/', False);
+    public function cancellation(string $transaction_id){
+
+        if(!preg_match('/^[0-9]{6,22}$/', $transaction_id)){
+              throw new \Exception('$transaction_id don\'t match with pattern.');
+        }
 
         $payload = array(
           'transaction_id' => $transaction_id
         );
 
         $args = $this->send($payload, 'cancellation');
-        return new \Sipay\Responses\Cancellation($args[0], $args[1]);
+        return new Responses\Cancellation($args[0], $args[1]);
 
     }
 
-    public function query($query){
-        $this->check_parameter($query, '$query', 'array');
+    public function query(array $query){
         $payload = array();
 
-        if(isset($query['transaction_id'])){
-            $this->check_parameter($query['transaction_id'], '$transaction_id', 'string', '/^[0-9]{6,22}$/');
-            $payload['transaction_id'] = $query['transaction_id'];
-        }
+        $array_schema = array(
+            'order' => array(
+                'type' => 'string',
+                'pattern' => '/^[\w-]{6,64}$/'
+            ),
+            'transaction_id' => array(
+                'type' => 'string',
+                'pattern' => '/^[0-9]{6,22}$/'
+            )
+          );
 
-        if(isset($query['order'])){
-            $this->check_parameter($query['order'], '$order', 'string', '/^[\w-]{6,64}$/');
-            $payload['order'] = $query['order'];
-        }
+        $payload = $this->clean_parameters($query, $array_schema);
 
         $args = $this->send($payload, 'query');
-        return new \Sipay\Responses\Query($args[0], $args[1]);
+        return new Responses\Query($args[0], $args[1]);
 
     }
 
