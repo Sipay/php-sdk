@@ -18,6 +18,7 @@ class Logger
 
     /**
      * Log Levels
+     *
      * @var array
      */
     protected static $levels = array(
@@ -93,7 +94,11 @@ class Logger
                 }
             }
 
-            usort($logs, function($a, $b) {return ($a['date'] < $b['date']) ? -1 : 1;});
+            usort(
+                $logs, function ($a, $b) {
+                    return ($a['date'] < $b['date']) ? -1 : 1;
+                }
+            );
 
             $delete = (count($logs) > $this->options['backup_file_rotation']) ? count($logs) - $this->options['backup_file_rotation'] : 0;
 
