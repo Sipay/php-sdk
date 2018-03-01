@@ -374,4 +374,16 @@ class Ecommerce{
         return new \Sipay\Responses\Unregister($args[0], $args[1]);
 
     }
+
+    public function cancellation($transaction_id){
+        $this->check_parameter($transaction_id, '$transaction_id', 'string', '/^[0-9]{6,22}$/', False);
+
+        $payload = array(
+          'transaction_id' => $transaction_id
+        );
+
+        $args = $this->send($payload, 'cancellation');
+        return new \Sipay\Responses\Cancellation($args[0], $args[1]);
+
+    }
 }
