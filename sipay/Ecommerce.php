@@ -386,4 +386,24 @@ class Ecommerce{
         return new \Sipay\Responses\Cancellation($args[0], $args[1]);
 
     }
+
+    public function query($query){
+        $this->check_parameter($query, '$query', 'array');
+        $payload = array();
+
+        if(isset($query['transaction_id'])){
+            $this->check_parameter($query['transaction_id'], '$transaction_id', 'string', '/^[0-9]{6,22}$/');
+            $payload['transaction_id'] = $query['transaction_id'];
+        }
+
+        if(isset($query['order'])){
+            $this->check_parameter($query['order'], '$order', 'string', '/^[\w-]{6,64}$/');
+            $payload['order'] = $query['order'];
+        }
+
+        $args = $this->send($payload, 'query');
+        return new \Sipay\Responses\Query($args[0], $args[1]);
+
+    }
+
 }
