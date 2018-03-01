@@ -3,17 +3,13 @@ namespace Sipay\Paymethods;
 
 class FastPay implements Paymethod
 {
-    public function __construct($token)
+    public function __construct(string $token)
     {
         $this->set_token($token);
     }
 
-    public function set_token($token)
+    public function set_token(string $token)
     {
-        if (gettype($token) != "string") {
-            throw new \Exception('$token must be a string.');
-        }
-
         if(!preg_match("/^[0-9a-fA-F]{32}$/", $token)) {
             throw new \Exception('$token don\'t match with pattern.');
         }
