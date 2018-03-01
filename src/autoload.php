@@ -25,7 +25,7 @@ function autoload($class)
     $filename .= str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
 
     $path .= $filename;
-    
+
     if (file_exists($path)) {
         include $path;
     }
