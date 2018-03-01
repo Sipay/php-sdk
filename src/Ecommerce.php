@@ -430,7 +430,6 @@ class Ecommerce
 
         $args = $this->send($payload, 'query');
         return new Responses\Query($args[0], $args[1]);
-
     }
 }
 

@@ -226,13 +226,13 @@ class Amount
 
         $this->currency = $this->CURRENCIES[$currency];
 
-        if (gettype($amount) == "string" 
+        if (gettype($amount) == "string"
             && preg_match("/^[0-9]+\.[0-9]{".$this->currency[1]."}$/", $amount)
         ) {
                 $amount = intval(str_replace(".", "", $amount));
         }
 
-        if (gettype($amount) == "string" 
+        if (gettype($amount) == "string"
             && preg_match("/^[0-9]+$/", $amount)
         ) {
                 $amount = intval($amount);
