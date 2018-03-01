@@ -27,7 +27,7 @@ function autoload($class)
     $path .= $filename;
 
     if (file_exists($path)) {
-        require $path;
+        include $path;
     }
 }
 
