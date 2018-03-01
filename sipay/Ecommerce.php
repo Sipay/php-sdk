@@ -329,4 +329,25 @@ class Ecommerce{
         return new \Sipay\Responses\Refund($args[0], $args[1]);
 
     }
+
+    public function register($card, $token){
+        $is_paymethod = is_subclass_of($card, 'Sipay\Paymethods\Paymethod');
+        $is_stored_card = $card instanceof \Sipay\Paymethods\StoredCard;
+
+        if (!$is_paymethod || $is_stored_card){
+            throw new \Exception('incorrect $card.');
+        }
+
+        $this->check_parameter($token, '$token', 'string', '/^[\w-]{6,128}$/', False);
+
+        $payload = array(
+          'token' => $token
+        );
+
+        $payload = array_replace($payload , $card->to_json());
+
+        $args = $this->send($payload, 'register');
+        return new \Sipay\Responses\Register($args[0], $args[1]);
+
+    }
 }
