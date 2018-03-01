@@ -432,5 +432,3 @@ class Ecommerce
         return new Responses\Query($args[0], $args[1]);
     }
 }
-
-}
