@@ -18,6 +18,7 @@ class Logger
 
     /**
      * Log Levels
+     *
      * @var array
      */
     protected static $levels = array(
@@ -47,9 +48,10 @@ class Logger
         $this->uuid = md5(microtime(true));
 
         $path = $options['path'];
-        if($path === '') throw new Exception("Empty path");
+        if($path === '') { throw new Exception("Empty path"); 
+        }
 
-        if($path[0] !== DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i',$path) > 0){
+        if($path[0] !== DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0) {
             $options['path'] = sipay_sdk_root_path($options['path']);
         }
 
@@ -98,7 +100,11 @@ class Logger
                 }
             }
 
-            usort($logs, function($a, $b) {return ($a['date'] < $b['date']) ? -1 : 1;});
+            usort(
+                $logs, function ($a, $b) {
+                    return ($a['date'] < $b['date']) ? -1 : 1;
+                }
+            );
 
             $delete = (count($logs) > $this->options['backup_file_rotation']) ? count($logs) - $this->options['backup_file_rotation'] : 0;
 

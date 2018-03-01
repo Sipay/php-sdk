@@ -12,10 +12,11 @@ class Response
     public $type;
     public $uuid;
 
-    protected function set_common($request, $response) {
+    protected function set_common($request, $response) 
+    {
         $this->request = $request;
         $this->response = $response;
-        if(is_array($response)){
+        if(is_array($response)) {
             $this->code = isset($response['code']) ? $response['code'] : null;
             $this->detail = isset($response['detail']) ? $response['detail'] : null;
             $this->description = isset($response['description']) ? $response['description'] : null;
@@ -24,13 +25,13 @@ class Response
             $this->uuid = isset($response['uuid']) ? $response['uuid'] : null;
 
 
-            if($this->code !== ""){
+            if($this->code !== "") {
                 $this->code = intval($this->code);
             }
 
             return isset($response['payload']) ? $response['payload'] : null;
         }else{
-          return array();
+            return array();
         }
 
     }
