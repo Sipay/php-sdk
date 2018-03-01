@@ -52,7 +52,6 @@ class Logger
         if($path[0] !== DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i',$path) > 0){
             $options['path'] = sipay_sdk_root_path($options['path']);
         }
-        var_dump($options['path']);
 
         $this->setup($options);
     }
