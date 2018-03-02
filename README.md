@@ -3,9 +3,32 @@
 
 # Instalación
 
+## Extracción de código
   ```bash
-    $ git clone https://github.com/sipay/php-sdk
+    $ git clone https://github.com/sipay/php-sdk.git
   ```
+
+## Composer
+Crear archivo composer.json o añadir estos parametros:
+```json
+  {
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/sipay/php-sdk.git",
+      }
+    ],
+    "require": {
+      "sipay/php-sdk": "*"
+    }
+  }
+```
+y realizar los siguientes pasos
+
+```bash
+$ php -r "readfile('https://getcomposer.org/installer');" | php
+$ php composer.phar install
+```
 
 
 # Quickstart
