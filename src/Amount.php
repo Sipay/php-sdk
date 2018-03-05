@@ -37,7 +37,7 @@ class Amount
         }
 
         if(!isset(Catalogs\CURRENCIES[$currency])) {
-            throw new \Exception('$currency don\'t exists.');
+            throw new \Exception('$currency doesn\'t exists.');
         }
 
         if(Catalogs\CURRENCIES[$currency][1] < 0) {
