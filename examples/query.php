@@ -5,7 +5,7 @@ $ecommerce = new \Sipay\Ecommerce(realpath(__DIR__."/../etc/config.ini"));
 
 $amount = new \Sipay\Amount(200, 'EUR');
 
-$card = new \Sipay\Paymethods\Card('6712009000000205', 2018, 12);
+$card = new \Sipay\Paymethods\Card('42424242424242', 2018, 12);
 
 $options = array(
   'order' => 'order-test'
@@ -30,7 +30,11 @@ if($auth2->code == 0) {
 $query = $ecommerce->query(array('order' => 'order-test'));
 
 if($query->code == 0) {
-    print(count($query->transactions)." transacciones recuperadas con éxito!\n");
+	print(count($query->transactions)." transacciones recuperadas con éxito!\n");
+	foreach ($query->transactions as $transaction ){
+		print($transaction->transaction_id."\n");
+		print($transaction->masked_card."\n");
+	}
 }else{
     print("Error: ".$query->description."\n");
 }
