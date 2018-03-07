@@ -47,7 +47,13 @@ class Logger
     {
         $this->uuid = md5(microtime(true));
 
-        $options['path'] = sipay_sdk_root_path($options['path']);
+        $path = $options['path'];
+        if($path === '') { throw new Exception("Empty path"); 
+        }
+
+        if($path[0] !== DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0) {
+            $options['path'] = sipay_sdk_root_path($options['path']);
+        }
 
         $this->setup($options);
     }
