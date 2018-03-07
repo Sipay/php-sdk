@@ -19,7 +19,7 @@ function autoload($class)
     if ($last = strrpos($class, '\\')) {
         $namespace = substr($class, 0, $last);
         $class = substr($class, $last + 1);
-        $filename  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+        $filename  = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $namespace)) . DIRECTORY_SEPARATOR;
     }
 
     $filename .= str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
