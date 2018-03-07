@@ -35,10 +35,7 @@ if(!defined('SIPAY_SDK_ROOT_PATH')) {
     define('SIPAY_SDK_ROOT_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
 }
 
-if(!defined('SIPAY_SDK_PROFILE_PATH')) {
-    define('SIPAY_SDK_PROFILE_PATH', SIPAY_SDK_ROOT_PATH . 'profile' . DIRECTORY_SEPARATOR);
-}
-
+require_once SIPAY_SDK_ROOT_PATH."catalogs/currency.php";
 require_once 'helpers.php';
 
 spl_autoload_register('autoload');
