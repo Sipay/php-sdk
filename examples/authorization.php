@@ -3,9 +3,11 @@ require_once realpath(__DIR__.'/../src/autoload.php');
 
 $ecommerce = new \Sipay\Ecommerce(realpath(__DIR__."/../etc/config.ini"));
 
+print("Autorización \n");
+
 $amount = new \Sipay\Amount(200, 'EUR');
 
-$card = new \Sipay\Paymethods\Card('6712009000000205', 2018, 12);
+$card = new \Sipay\Paymethods\Card('4242424242424242', 2018, 12);
 
 $options = array(
   'order' => 'order-test',
@@ -20,8 +22,9 @@ if($auth->code == 0) {
 }else{
     print("Error: ".$auth->description."\n");
 }
+print("Autorización tokenizada \n");
 
-$stored_card = new \Sipay\Paymethods\StoredCard('new-token');
+$stored_card = new \Sipay\Paymethods\StoredCard('ABC123');
 
 $auth2 = $ecommerce->authorization($stored_card, $amount, $options);
 
@@ -31,6 +34,7 @@ if($auth2->code == 0) {
     print("Error: ".$auth2->description."\n");
 }
 
+print("Autorización con FPAY \n");
 $fast_pay = new \Sipay\Paymethods\FastPay('0f266784e7ba4e438040fdd1dbbfcd73');
 
 $auth3 = $ecommerce->authorization($fast_pay, $amount, $options);
