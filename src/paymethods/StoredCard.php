@@ -11,7 +11,7 @@ class StoredCard implements Paymethod
     public function set_token(string $token)
     {
         if(!preg_match("/^[\w-]{6,128}$/", $token)) {
-            throw new \Exception('$token don\'t match with pattern.');
+            throw new \Exception('Invalid token provided: wrong format.');
         }
 
         $this->token = $token;

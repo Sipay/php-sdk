@@ -12,7 +12,7 @@ class Response
     public $type;
     public $uuid;
 
-    protected function set_common($request, $response) 
+    protected function set_common($request, $response)
     {
         $this->request = $request;
         $this->response = $response;
@@ -23,7 +23,6 @@ class Response
             $this->request_id = isset($response['request_id']) ? $response['request_id'] : null;
             $this->type = isset($response['type']) ? $response['type'] : null;
             $this->uuid = isset($response['uuid']) ? $response['uuid'] : null;
-
 
             if($this->code !== "") {
                 $this->code = intval($this->code);
