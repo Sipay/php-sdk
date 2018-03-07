@@ -3,7 +3,7 @@ require_once realpath(__DIR__.'/../src/autoload.php');
 
 $ecommerce = new \Sipay\Ecommerce(realpath(__DIR__."/../etc/config.ini"));
 
-$card = new \Sipay\Paymethods\Card('6712009000000205', 2018, 12);
+$card = new \Sipay\Paymethods\Card('4242424242424242', 2018, 12);
 
 $register = $ecommerce->register($card, $token = 'new-token');
 
