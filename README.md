@@ -43,10 +43,10 @@ Este paso se omite si se utiliza la instalación via composer.
     $ git clone https://github.com/sipay/php-sdk.git
   ```
 
-Entonces establecemos la variable "path_autoload" a "<directorio_de_descarga_de_php-sdk>/autoload.php":
+Entonces establecemos la variable "path_autoload" a "<directorio_de_descarga_de_php-sdk>/src/autoload.php"
 
 ```php
-$path_autoload = "<directorio_de_descarga_de_php-sdk>/autoload.php";
+$path_autoload = "<directorio_de_descarga_de_php-sdk>/src/autoload.php";
 ```
 
 ## 3.2.2 Composer
