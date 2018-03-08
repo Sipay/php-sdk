@@ -53,26 +53,9 @@ $path_autoload = "<directorio_de_descarga_de_php-sdk>/src/autoload.php";
 
 Este paso se omite si se utiliza el método manual.
 
-Crear archivo composer.json o añadir estos parámetros:
-
-```json
-  {
-    "repositories": [
-      {
-        "type": "vcs",
-        "url": "https://github.com/sipay/php-sdk.git"
-      }
-    ],
-    "require": {
-      "sipay/php-sdk": "*"
-    }
-  }
-```
-y realizar los siguientes pasos
-
 ```bash
-$ php -r "readfile('https://getcomposer.org/installer');" | php
-$ php composer.phar install
+$ composer require sipay/php-sdk
+
 ```
 
 Entonces establecemos la variable "path_autoload" a "vendor/autoload.php":
