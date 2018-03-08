@@ -13,7 +13,7 @@ class Refund extends Response
     public $transaction_id;
     public $amount;
 
-    public function __construct($request, $response) 
+    public function __construct($request, $response)
     {
         $payload = $this->set_common($request, $response);
         $this->approval = isset($payload['approval']) ? $payload['approval'] : null;
@@ -24,6 +24,7 @@ class Refund extends Response
         $this->order = isset($payload['order']) ? $payload['order'] : null;
         $this->reference = isset($payload['reconciliation']) ? $payload['reconciliation'] : null;
         $this->transaction_id = isset($payload['transaction_id']) ? $payload['transaction_id'] : null;
+
         if(isset($payload['amount']) && isset($payload['currency'])) {
             $this->amount = new \Sipay\Amount($payload['amount'], $payload['currency']);
         }else{

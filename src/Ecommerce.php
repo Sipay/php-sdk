@@ -48,7 +48,7 @@ class Ecommerce
             throw new \Exception('$key must be a string.');
         }
         if(!preg_match("/^[\w-]{6,32}$/", $key)) {
-            throw new \Exception('$key don\'t match with pattern.');
+            throw new \Exception('Invalid key provided: wrong format.');
         }
         $this->key = $key;
     }
@@ -64,7 +64,7 @@ class Ecommerce
             throw new \Exception('$secret must be a string.');
         }
         if(!preg_match("/^[\w-]{6,32}$/", $secret)) {
-            throw new \Exception('$secret don\'t match with pattern.');
+            throw new \Exception('Invalid secret provided: wrong format.');
         }
         $this->secret = $secret;
     }
@@ -80,7 +80,7 @@ class Ecommerce
             throw new \Exception('$resource must be a string.');
         }
         if(!preg_match("/^[\w-]{6,32}$/", $resource)) {
-            throw new \Exception('$resource don\'t match with pattern.');
+            throw new \Exception('Invalid resource provided: wrong format.');
         }
         $this->resource = $resource;
     }
@@ -145,7 +145,7 @@ class Ecommerce
         }
         $timeout = intval($timeout);
         if($timeout <= 0) {
-            throw new \Exception('$timeout must be geater than 0.');
+            throw new \Exception('$timeout must be greater than 0.');
         }
         $this->timeout = $timeout;
     }
@@ -159,26 +159,27 @@ class Ecommerce
 
         $url = 'https://'.$this->environment.'.sipay.es/mdwr/'.$this->version.'/'.$endpoint;
         $data = array(
-        'key' => $this->key,
-        'nonce' => "".time(),
-        'mode' => $this->mode,
-        'resource' => $this->resource,
-        'payload' => $payload
+            'key' => $this->key,
+            'nonce' => "".time(),
+            'mode' => $this->mode,
+            'resource' => $this->resource,
+            'payload' => $payload
         );
 
         $body = json_encode($data);
         $signature = hash_hmac($this->mode, $body, $this->secret);
 
         $options = array(
-        'http' => array(
-        'header'  => "Content-type: application/json\r\nContent-Signature: ".$signature."\r\n",
-        'method'  => 'POST',
-        'content' => $body,
-        'timeout' => $this->timeout,
-        'ignore_errors' => true
-        ),
+            'http' => array(
+                'header'  => "Content-type: application/json\r\nContent-Signature: ".$signature."\r\n",
+                'method'  => 'POST',
+                'content' => $body,
+                'timeout' => $this->timeout,
+                'ignore_errors' => true
+            ),
         );
-        $context  = stream_context_create($options);
+
+        $context = stream_context_create($options);
         try {
             $response_body = file_get_contents($url, false, $context);
         } catch (Exception $e) {
@@ -223,12 +224,13 @@ class Ecommerce
         $this->logger->info(
             'sipay.request', 'request.response', 'I-0002', 'Request Response',
             array(
-                           'payload' => $payload,
-                           'endpoint' => $endpoint,
-            'response' => $response_body)
+               'payload' => $payload,
+               'endpoint' => $endpoint,
+               'response' => $response_body
+            )
         );
 
-                         return array($body, $response);
+        return array($body, $response);
     }
 
     private function clean_parameters(array $array_options, array $array_schema)
@@ -243,7 +245,7 @@ class Ecommerce
                 }
 
                 if(is_string($option) && isset($schema['pattern']) && !preg_match($schema['pattern'], $option)) {
-                    throw new \Exception("$name don't match with pattern.");
+                    throw new \Exception('Invalid name provided: wrong format.');
                 }
 
                 $options[$name] = $option;
@@ -299,7 +301,7 @@ class Ecommerce
         $is_tx_id = gettype($identificator) == "string" && preg_match('/^[0-9]{6,22}$/', $identificator);
 
         if (!$is_paymethod && !$is_tx_id) {
-            throw new \Exception('incorrect $identificator.');
+            throw new \Exception('Incorrect $identificator.');
         }
 
         $array_schema = array(
@@ -347,11 +349,11 @@ class Ecommerce
     {
 
         if ($card instanceof Paymethods\StoredCard) {
-            throw new \Exception('$card can\'t be StoredCard.');
+            throw new \Exception('$card can\'t be a StoredCard instance.');
         }
 
         if(!preg_match('/^[\w-]{6,128}$/', $token)) {
-            throw new \Exception('$token don\'t match with pattern.');
+            throw new \Exception('Invalid token provided: wrong format.');
         }
 
         $payload = array(
@@ -368,7 +370,7 @@ class Ecommerce
     public function card(string $token)
     {
         if(!preg_match('/^[\w-]{6,128}$/', $token)) {
-            throw new \Exception('$token don\'t match with pattern.');
+            throw new \Exception('Invalid token provided: wrong format.');
         }
 
         $payload = array(
@@ -383,7 +385,7 @@ class Ecommerce
     public function unregister(string $token)
     {
         if(!preg_match('/^[\w-]{6,128}$/', $token)) {
-            throw new \Exception('$token don\'t match with pattern.');
+            throw new \Exception('Invalid token provided: wrong format.');
         }
 
         $payload = array(
@@ -399,7 +401,7 @@ class Ecommerce
     {
 
         if(!preg_match('/^[0-9]{6,22}$/', $transaction_id)) {
-              throw new \Exception('$transaction_id don\'t match with pattern.');
+            throw new \Exception('Invalid transaction_id provided: wrong format.');
         }
 
         $payload = array(

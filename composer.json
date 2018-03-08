@@ -1,0 +1,19 @@
+{
+    "name": "sipay/php-sdk",
+    "description": "SDK on PHP of operations in Sipay.",
+    "keywords": ["sipay", "php", "sdk"],
+    "license": "LLL",
+    "authors": [
+        {
+            "name": "Sipay",
+            "email": "desarrollo@sipay.es"
+        }
+    ],
+    "type": "project",
+    "require": {
+  		"php": ">=7"
+    },
+    "autoload": {
+          "files": ["src/autoload.php"]
+      }
+}

@@ -3,9 +3,54 @@
 
 # Instalación
 
+Podemos instalarlo de forma manual (Ver "Extracción de código") o utilizando Composer (Ver "Composer").
+
+## Extracción de código
+
+Este paso se omite si se utiliza la instalación via composer.
+
   ```bash
-    $ git clone https://github.com/sipay/php-sdk
+    $ git clone https://github.com/sipay/php-sdk.git
   ```
+
+Entonces establecemos la variable "path_autoload" a "<directorio_de_descarga_de_php-sdk>/autoload.php":
+
+```php
+$path_autoload = "<directorio_de_descarga_de_php-sdk>/autoload.php";
+```
+
+
+## Composer
+
+Este paso se omite si se utiliza el metodo manual.
+
+Crear archivo composer.json o añadir estos parametros:
+
+```json
+  {
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/sipay/php-sdk.git"
+      }
+    ],
+    "require": {
+      "sipay/php-sdk": "*"
+    }
+  }
+```
+y realizar los siguientes pasos
+
+```bash
+$ php -r "readfile('https://getcomposer.org/installer');" | php
+$ php composer.phar install
+```
+
+Entonces establecemos la variable "path_autoload" a "vendor/autoload.php":
+
+```php
+$path_autoload = "vendor/autoload.php";
+```
 
 
 # Quickstart
