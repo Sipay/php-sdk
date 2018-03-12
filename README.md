@@ -213,7 +213,7 @@ La cantidad se puede especificar de tres formas:
   print($amount->get_currency()."\n")
   // Imprime EUR
 ```
-**Nota:** En el caso de iniciarlo con el `string` es imprescindible que tenga el número de decimales que indica el estándar ISO4217.
+**Nota:** En el caso de iniciarlo con un `string` que incluya un punto es imprescindible que tenga el número de decimales que indica el estándar ISO4217. Ejemplo: para la moneda euro (€) que establece dos decimales, es correcto indicar un amount de `"1.40"` pero no es correcto `"1.4"`.
 
 ### **5.1.2. `Card(card_number, year, month)`**
 
