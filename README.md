@@ -70,70 +70,102 @@ Una vez que se ha instalado la SDK, se deben actualizar los parámetros de confi
 * Credenciales de acceso (Se gestionan con el departamento de integraciones de Sipay).
 * Entorno y versión de la API.
 * Tiempo máximo de espera de respuestas (Timeout).
+## 4.1. Desde un fichero
 
-Un ejemplo de configuraciones se muestra a continuación:
-```ini
-; **************************************************************
-; LOGGER
-; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-; Configuración asociada al sistema de trazas.
-;
-; path: ruta del directorio de logs (Nota: Aconsejable usar rutas absolutas, en caso contrario los logs estaran dentro del paquete)
-; level: nivel minimo de trazas [debug, info, warning, error, critical]
-; prefix: prefijo
-; extension: extensión del archivo
-; date_format: formato de fecha de las trazas
-; backup_file_rotation: Número de ficheros de backup
-; ------------------------------------------------------------//
+  Un ejemplo de configuraciones se muestra a continuación:
+  ```ini
+  ; **************************************************************
+  ; LOGGER
+  ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ; Configuración asociada al sistema de trazas.
+  ;
+  ; path: ruta del directorio de logs (Nota: Aconsejable usar rutas absolutas, en caso contrario los logs estaran dentro del paquete)
+  ; level: nivel mínimo de trazas [debug, info, warning, error, critical]
+  ; prefix: prefijo
+  ; extension: extensión del archivo
+  ; date_format: formato de fecha de las trazas
+  ; backup_file_rotation: Número de ficheros de backup
+  ; ------------------------------------------------------------//
 
-[logger]
-path=logs
-level=warning
-prefix=logger
-extension=log
-date_format=d/m/Y H:i:s
-backup_file_rotation = 5
+  [logger]
+  path=logs
+  level=warning
+  prefix=logger
+  extension=log
+  date_format=d/m/Y H:i:s
+  backup_file_rotation = 5
 
-; **************************************************************
-; CREDENTIALS
-; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-; Credenciales para obtener acceso al recurso.
-;
-; key: Key del cliente
-; secret: Secret del cliente
-; resouce: Recurso al que se quiere acceder
-; ------------------------------------------------------------//
+  ; **************************************************************
+  ; CREDENTIALS
+  ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ; Credenciales para obtener acceso al recurso.
+  ;
+  ; key: Key del cliente
+  ; secret: Secret del cliente
+  ; resouce: Recurso al que se quiere acceder
+  ; ------------------------------------------------------------//
 
-[credentials]
-key=api-key
-secret=api-secret
-resource=resource
+  [credentials]
+  key=api-key
+  secret=api-secret
+  resource=resource
 
-; **************************************************************
-; API
-; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-; Configuracion de la API.
-;
-; environment: Entorno al que se deben enviar las peticiones ['sandbox', 'staging', 'live']
-; version: Versión de la api a usar actualmente solo existe v1
-; mode: Modo de encriptacion de la firma, [sha256, sha512]
-; ------------------------------------------------------------//
+  ; **************************************************************
+  ; API
+  ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ; Configuracion de la API.
+  ;
+  ; environment: Entorno al que se deben enviar las peticiones ['sandbox', 'staging', 'live']
+  ; version: Versión de la api a usar actualmente solo existe v1
+  ; mode: Modo de encriptacion de la firma, [sha256, sha512]
+  ; ------------------------------------------------------------//
 
-[api]
-environment=sandbox
-version=v1
-mode=sha256
+  [api]
+  environment=sandbox
+  version=v1
+  mode=sha256
 
-; **************************************************************
-; Connection
-; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-; Cofiguracion de la conexión.
-;
-; timeout: Tiempo máximo de espera a la respuesta de la petición
-; ------------------------------------------------------------//
+  ; **************************************************************
+  ; Connection
+  ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ; Cofiguracion de la conexión.
+  ;
+  ; timeout: Tiempo máximo de espera a la respuesta de la petición
+  ; ------------------------------------------------------------//
 
-[connection]
-timeout=30
+  [connection]
+  timeout=30
+  ```
+
+## 4.2. Desde una variable
+En algunos casos, pudiera interesarnos cargar la configuración desde una variable y no desde un archivo. Este sería un ejemplo:
+
+```php
+  <?php
+  $config = array(
+      'logger' => array(
+          'path' => 'logs',  // Nombre del directorio donde se crearan los logs (Nota: si la ruta es relativa se creará en el directorio del paquete)
+          'level' => 'warning',  // Nivel mínimo de trazas [debug, info, warning, error, critical]
+          'prefix' => 'logger',  // Prefijo del nombre del archivo
+          'extension' => 'log',  // Extensión del archivo
+          'date_format' => 'd/m/Y H:i:s',  // Formato de fecha de las trazas de log
+          'backup_file_rotation' => 5  // Número de ficheros de backup
+      ),
+      'credentials' => array(
+          'key' => 'api-key',  // Key del cliente
+          'secret' => 'api-secret',  // Secret del cliente
+          'resource' => 'resource' // Recurso al que se quiere acceder
+      ),
+      'api' => array(
+          'environment' => 'sandbox',  // Entorno al que se deben enviar las peticiones ['sandbox', 'staging', 'live']
+          'version' => 'v1',  // Versión de la api a usar actualmente solo existe v1
+          'mode' => 'sha256'  // Modo de encriptacion de la firma, [sha256, sha512]
+      ),
+      'connection' => array(
+          'timeout' => 30  // Tiempo máximo de respuesta de la petición.
+      )
+  );
+
 ```
 
 # 5. Documentación extendida
@@ -293,7 +325,7 @@ Ejemplo:
   $card = new \Sipay\Paymethods\FastPay('token-fast-pay');
 ```
 
-## 5.2. Operativas de Ecommerce - `Ecommerce($config_file)`
+## 5.2. Operativas de Ecommerce - `Ecommerce($config_file)` ó `Ecommerce($config_var)`
 
 #### Descripción
 Las operativas de Ecommerce forman parte de los métodos definidos en la clase `Ecommerce`. Para instanciar un objeto de este tipo se requiere el archivo de configuración.
