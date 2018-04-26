@@ -27,7 +27,7 @@ $config = array(
     )
 );
 
-$ecommerce = new \Sipay\Ecommerce(realpath(__DIR__."/../etc/config.ini"));
+$ecommerce = new \Sipay\Ecommerce($config);
 print($ecommerce->getKey()."\n");
 print($ecommerce->getSecret()."\n");
 print($ecommerce->getresource()."\n");
