@@ -13,27 +13,31 @@ class Ecommerce
     protected $mode;
     protected $timeout;
 
-    public function __construct($config_path)
+    public function __construct($config)
     {
-        if (gettype($config_path) != "string") {
-            throw new \Exception('$config_path must be a string.');
+        if (gettype($config) == "string") {
+
+          $config_obj = parse_ini_file($config, true);
+
+        }else if(gettype($config) == "array"){
+          $config_obj = $config;
+        }else{
+          throw new \Exception('$config must be a string or array.');
         }
 
-        $config = parse_ini_file($config_path, true);
+        $this->logger = new Logger($config_obj['logger']);
 
-        $this->logger = new Logger($config['logger']);
-
-        $cred = $config['credentials'];
+        $cred = $config_obj['credentials'];
         $this->setKey(isset($cred['key']) ? $cred['key'] : '');
         $this->setSecret(isset($cred['secret']) ? $cred['secret'] : '');
         $this->setResource(isset($cred['resource']) ? $cred['resource'] : '');
 
-        $api = $config['api'];
+        $api = $config_obj['api'];
         $this->setEnvironment(isset($api['environment']) ? $api['environment'] : '');
         $this->setVersion(isset($api['version']) ? $api['version'] : '');
         $this->setMode(isset($api['mode']) ? $api['mode'] : '');
 
-        $connection = $config['connection'];
+        $connection = $config_obj['connection'];
         $this->setTimeout(isset($connection['timeout']) ? $connection['timeout'] : '30');
     }
 
