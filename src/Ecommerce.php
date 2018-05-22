@@ -67,7 +67,7 @@ class Ecommerce
         if (gettype($secret) != "string") {
             throw new \Exception('$secret must be a string.');
         }
-        if(!preg_match("/^[\w-]{6,32}$/", $secret)) {
+        if(!preg_match("/^[\w-]{6,128}$/", $secret)) {
             throw new \Exception('Invalid secret provided: wrong format.');
         }
         $this->secret = $secret;
