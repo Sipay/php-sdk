@@ -260,7 +260,7 @@ class Ecommerce
 
     }
 
-    public function authorization(Paymethods\Paymethod $paymethod, Amount $amount, array $array_options = array())
+    public function authentication(Paymethods\Paymethod $paymethod, Amount $amount, array $array_options = array())
     {
 
         $array_schema = array(
@@ -276,27 +276,74 @@ class Ecommerce
                 'type' => 'string',
                 'pattern' => '/^[\w-]{6,128}$/'
             ),
+            'sca_exemptions' => array(
+                'type' => 'string',
+                'pattern' => '/^(MIT|COR|LVW|TRA)$/'
+            ),
+            'moto' => array(
+                'type' => 'string',
+                'pattern' => '/^(phone|mail)$/'
+            ),
             'custom_01' => array(
                 'type' => 'string'
             ),
             'custom_02' => array(
                 'type' => 'string'
             ),
+            'reason' => array(
+                'type' => 'string', 
+                'pattern' => '/^(C|R|I|D|E|H|M|N)$/'
+            ),
+            'sca_preference' => array(
+                    'type' => 'string'
+                ),
+            'previously_authenticated' => array(
+                'type' => 'bool'
+            )
           );
 
+
         $options = $this->clean_parameters($array_options, $array_schema);
+
+	// Dont validate auth data or emv3ds data
+	if (isset($options['authentication_data'])) {
+	    $payload['authentication_data'] = $array_options['authentication_data'];
+	}
+	if (isset($options['emv3ds'])) {
+	    $payload['emv3ds'] = $array_options['authentication_data'];
+	}
 
         if(isset($options['reference'])) {
             $options['reconciliation'] = $options['reference'];
             unset($options['reference']);
         }
 
-
         $payload = array_replace($options, $amount->get_array(), $paymethod->to_json());
 
-        $args = $this->send($payload, 'authorization');
+        $args = $this->send($payload, 'all-in-one');
         return new Responses\Authorization($args[0], $args[1]);
+    }
 
+    public function confirm(array $array_options = array(), Amount $amount = null)
+    {
+
+        $array_schema = array(
+            'request_id' => array(
+                'type' => 'string',
+                'pattern' => '/^[\w-]{6,64}$/'
+	        )
+	    );
+
+        $options = $this->clean_parameters($array_options, $array_schema);
+
+        if($amount === null) {
+            $payload = $options;
+        } else {
+            $payload = array_replace($options, $amount->get_array());
+        }
+        
+        $args = $this->send($payload, 'all-in-one/confirm');
+        return new Responses\Confirm($args[0], $args[1]);
     }
 
     public function refund($identificator, Amount $amount, array $array_options = array())

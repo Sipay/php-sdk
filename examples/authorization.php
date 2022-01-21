@@ -7,15 +7,15 @@ print("Autorización \n");
 
 $amount = new \Sipay\Amount(200, 'EUR');
 
-$card = new \Sipay\Paymethods\Card('4242424242424242', 2018, 12);
+$card = new \Sipay\Paymethods\Card('4242424242424242', 2042,12,424);
 
 $options = array(
   'order' => 'order-test',
   'reference' => '1234',
-  'token' => 'new-token'
+  'token' => 'token'
 );
 
-$auth = $ecommerce->authorization($card, $amount, $options);
+$auth = $ecommerce->authentication($card, $amount, $options);
 
 if($auth->code == 0) {
     print("Autorización aceptada, el pago ha sido completado!\n");
@@ -24,9 +24,9 @@ if($auth->code == 0) {
 }
 print("Autorización tokenizada \n");
 
-$stored_card = new \Sipay\Paymethods\StoredCard('ABC123');
+$stored_card = new \Sipay\Paymethods\StoredCard('token');
 
-$auth2 = $ecommerce->authorization($stored_card, $amount, $options);
+$auth2 = $ecommerce->authentication($stored_card, $amount, $options);
 
 if($auth2->code == 0) {
     print("Autorización aceptada, el pago ha sido completado!\n");
@@ -37,7 +37,7 @@ if($auth2->code == 0) {
 print("Autorización con FPAY \n");
 $fast_pay = new \Sipay\Paymethods\FastPay('0f266784e7ba4e438040fdd1dbbfcd73');
 
-$auth3 = $ecommerce->authorization($fast_pay, $amount, $options);
+$auth3 = $ecommerce->authentication($fast_pay, $amount, $options);
 
 if($auth3->code == 0) {
     print("Autorización aceptada, el pago ha sido completado!\n");
