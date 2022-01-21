@@ -1,7 +1,7 @@
 <?php
 namespace Sipay\Responses;
 
-class Authorization extends Response
+class Confirm extends Response
 {
     public $approval;
     public $authorizator;
@@ -11,7 +11,6 @@ class Authorization extends Response
     public $order;
     public $reference;
     public $transaction_id;
-    public $request_id;
     public $amount;
 
     public function __construct($request, $response)
@@ -25,7 +24,6 @@ class Authorization extends Response
         $this->order = isset($payload['order']) ? $payload['order'] : null;
         $this->reference = isset($payload['reconciliation']) ? $payload['reconciliation'] : null;
         $this->transaction_id = isset($payload['transaction_id']) ? $payload['transaction_id'] : null;
-        $this->request_id = isset($payload['request_id']) ? $payload['request_id'] : null;
 
         if(isset($payload['amount']) && isset($payload['currency'])) {
             $this->amount = new \Sipay\Amount($payload['amount'], $payload['currency']);
