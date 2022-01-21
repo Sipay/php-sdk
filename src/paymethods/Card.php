@@ -6,11 +6,23 @@ class Card implements Paymethod
     private $card_number;
     private $year;
     private $month;
+    private $cvv;
 
-    public function __construct(string $card_number, int $year, int $month)
+    public function __construct(string $card_number, int $year, int $month, int $cvv)
     {
         $this->set_card_number($card_number);
         $this->set_expiration_date($year, $month);
+        $this->set_cvv($year, $month);
+    }
+
+    public function set_cvv(string $cvv)
+    {
+        return $this->cvv = $cvv;
+    }
+
+    public function get_cvv()
+    {
+	return $this->cvv;
     }
 
     public function get_card_number()
@@ -69,7 +81,8 @@ class Card implements Paymethod
         return array(
           'pan' => $this->card_number,
           'year' => $this->year,
-          'month' => $this->month
+          'month' => $this->month,
+          'cvv' => $this->cvv
         );
     }
 }
