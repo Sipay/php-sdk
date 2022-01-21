@@ -10,14 +10,12 @@ class Card implements Paymethod
 
     public function __construct(string $card_number, int $year, int $month, int $cvv = null)
     {
-        if($cvv) {
-            $this->set_card_number($card_number);
-            $this->set_expiration_date($year, $month);
+        $this->set_card_number($card_number);
+        $this->set_expiration_date($year, $month);
+
+        if(!is_null($cvv)) {
             $this->set_cvv($cvv);
-        } else {
-            $this->set_card_number($card_number);
-            $this->set_expiration_date($year, $month);
-        }
+        }        
     }
 
     public function set_cvv(string $cvv)
@@ -83,11 +81,19 @@ class Card implements Paymethod
 
     public function to_json()
     {
-        return array(
-          'pan' => $this->card_number,
-          'year' => $this->year,
-          'month' => $this->month,
-          'cvv' => $this->cvv
-        );
+        if(is_null($this->cvv)){
+            return array(
+                'pan' => $this->card_number,
+                'year' => $this->year,
+                'month' => $this->month,
+              );
+            } else {
+            return array(
+              'pan' => $this->card_number,
+              'year' => $this->year,
+              'month' => $this->month,
+              'cvv' => $this->cvv
+            );
+        }
     }
 }
