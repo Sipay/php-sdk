@@ -604,3 +604,5 @@ Este objeto no añade nada a lo indicado en los atributos comunes.
 
 #### 5.3.8 `Unregister`
 Este objeto no añade nada a lo descrito en los atributos comunes.
+#### 5.3.9 `Card`
+* **`cvv`:** Es un `string` identificador de la tarjeta.

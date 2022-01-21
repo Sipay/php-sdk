@@ -5,7 +5,7 @@ $ecommerce = new \Sipay\Ecommerce(realpath(__DIR__."/../etc/config.ini"));
 
 $amount = new \Sipay\Amount(200, 'EUR');
 
-$card = new \Sipay\Paymethods\Card('4242424242424242', 2018, 12);
+$card = new \Sipay\Paymethods\Card('4242424242424242', 2042,12,424);
 
 $auth = $ecommerce->authorization($card, $amount);
 
