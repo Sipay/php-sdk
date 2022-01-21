@@ -22,7 +22,7 @@ $auth2 = $ecommerce->authentication($storedCard, $amount, $options);
 if($auth2->code == 0) {
   print("Autenticación, la autorización ha sido completada!\n");
 }else{
-  print("Error: ".$auth->description."\n");
+  print("Error: ".$auth2->description."\n");
 }
 
 $auth3 = $ecommerce->confirm(array('request_id' => $auth2->request_id));
@@ -30,6 +30,6 @@ $auth3 = $ecommerce->confirm(array('request_id' => $auth2->request_id));
 if($auth3->code == 0) {
   print("Confirm correcto, el pago ha sido completado!\n");
 }else{
-  print("Error: ".$auth->description."\n");
+  print("Error: ".$auth3->description."\n");
 }
 //var_dump($auth3);

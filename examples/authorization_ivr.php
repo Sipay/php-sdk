@@ -31,5 +31,5 @@ $auth1 = $ecommerce->confirm(array('request_id' => $auth->request_id));
 if($auth1->code == 0) {
     print("Confirm correcto, el pago ha sido completado!\n");
 }else{
-    print("Error: ".$auth->description."\n");
+    print("Error: ".$auth1->description."\n");
 }
