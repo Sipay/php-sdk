@@ -170,13 +170,20 @@ En algunos casos, pudiera interesarnos cargar la configuración desde una variab
 
 # 5. Documentación extendida
 A través de peticiones a Sipay mediante Ecommerce, se pueden realizar operativas de:
-* Autorizaciones (sección 5.2.1).
-* Cancelaciones (sección 5.2.2).
-* Devoluciones (sección 5.2.3).
-* Búsquedas de operaciones o querys (sección 5.2.4).
-* Tokenización* de tarjetas (sección 5.2.5).
-* Búsqueda de tarjetas tokenizadas (sección 5.2.6).
-* Dar de baja una tarjeta tokenizada (sección 5.2.7).
+* Objetos necesarios para las operativas de e-commerce (sección 5.1).
+* Importe (sección 5.1.1).
+* Tarjeta (sección 5.1.2).
+* Tarjeta tokenizada (sección 5.1.3).
+* Tarjeta capturada por FastPay (sección 5.1.4).
+* Operativa de e-commerce (sección 5.2).
+* Autenticación (sección 5.2.1).
+* Confirmación (sección 5.2.2).
+* Cancelaciones (sección 5.2.3).
+* Devoluciones (sección 5.2.4).
+* Búsquedas de operaciones o querys (sección 5.2.5).
+* Tokenización* de tarjetas (sección 5.2.6).
+* Búsqueda de tarjetas tokenizadas (sección 5.2.7).
+* Dar de baja una tarjeta tokenizada (sección 5.2.8).
 
 _* Tokenización_: Es un proceso por el cual el PAN (_Primary Account Number_ – Número Primario de Cuenta) de la tarjeta se sustituye por un valor llamado token. Esta funcionalidad permite que Sipay guarde los datos de la tarjeta del cliente, para agilizar el proceso de pagos y evitar que se deba introducir, cada vez, los datos de tarjeta, en pagos repetitivos. Sipay realiza el almacenamiento de los datos de forma segura, cumpliendo con las normativas PCI.
 
@@ -247,7 +254,7 @@ La cantidad se puede especificar de tres formas:
 ```
 **Nota:** En el caso de iniciarlo con un `string` que incluya un punto es imprescindible que tenga el número de decimales que indica el estándar ISO4217. Ejemplo: para la moneda euro (€) que establece dos decimales, es correcto indicar un amount de `"1.40"` pero no es correcto `"1.4"`.
 
-### **5.1.2. `Card(card_number, year, month)`**
+### **5.1.2. `Card(card_number, year, month, [cvv])`**
 
 #### Definición
 Este objeto representa una tarjeta que se puede utilizar en las diferentes operativas de Ecommerce. Para obtener una instancia de `Card`, los parámetros se indican a continuación.
@@ -256,11 +263,14 @@ Este objeto representa una tarjeta que se puede utilizar en las diferentes opera
 * **`card_number`:** [_obligatorio_] Es un `string` con  longitud entre 14 y 19 dígitos. Representa el número de la tarjeta.
 * **`year`:** [_obligatorio_] Es un `int` de 4 dígitos que indica el año de caducidad de la tarjeta.
 * **`month`:** [_obligatorio_] Es un `int` de 2 dígitos con valores entre 1 y 12 que correspondiente al mes de caducidad de la tarjeta.
+* **`cvv`:** [_opcional_] Es un `int` de 3 a 4 dígitos con el valor del CVV de reverso de la tarjeta.
 
 #### Atributos
 * **`card_number`:** Es el número de la tarjeta en una instancia de `Card`. Es un `string` con longitud entre 14 y 19 dígitos (`protected`).
 * **`year`:** Es al año de caducidad de la tarjeta en una instancia de `Card`. Es un  `int` de 4 dígitos (`protected`).
 * **`month`:** Es el mes de caducidad de la tarjeta en una instancia de `Card`. Es un `int` de 2 dígitos entre 1 y 12 (`protected`).
+* **`cvv`:** Es un `int` de 3 a 4 dígitos con el valor del CVV de reverso de la tarjeta (`protected`).
+
 
 #### Métodos
 * **`set_card_number(card_number)`:** Permite asignar el PAN de la tarjeta
@@ -353,33 +363,38 @@ Los siguientes atributos (`protected`) se asignan en el archivo de configuracion
 
 #### Métodos
 Todos los atributos indicados tienen sus métodos de asignación con `set_[nombre_del_atributo]` y sus métodos de consulta con `get_[nombre_del_atributo]`.
-* **`authorization(parameters)`:** Permite hacer peticiones de autorización haciendo uso de los diferentes métodos de pago (ver sección 5.2.1).
-* **`cancellation(parameters)`:** Permite enviar peticiones de cancelaciones (ver sección 5.2.2).
-* **`refund(parameters)`:** Permite hacer devoluciones (ver sección 5.2.3).
-* **`query(parameters)`:** Permite hacer peticiones de búsqueda de operaciones (ver sección 5.2.4).
-* **`register(parameters)`:** Permite tokenizar una tarjeta (ver sección 5.2.5).
-* **`card(parameters)`:** Se utiliza para buscar una tarjeta que fue tokenizada (ver sección 5.2.6).
-* **`unregister(parameters)`:** Se utiliza para dar de baja una tarjeta tokenizada (ver sección 5.2.7).
+* **`authentication(parameters)`:** Permite hacer peticiones de autenticación y autorización con los parámetros de PSD2 (ver sección 5.2.1).
+* **`confirm(parameters)`:** Es el paso de confirmación de captura de fondos que se desencadena después de authentication (ver sección 5.2.2).
+* **`cancellation(parameters)`:** Permite enviar peticiones de cancelaciones (ver sección 5.2.3).
+* **`refund(parameters)`:** Permite hacer devoluciones (ver sección 5.2.4).
+* **`query(parameters)`:** Permite hacer peticiones de búsqueda de operaciones (ver sección 5.2.5).
+* **`register(parameters)`:** Permite tokenizar una tarjeta (ver sección 5.2.6).
+* **`card(parameters)`:** Se utiliza para buscar una tarjeta que fue tokenizada (ver sección 5.2.7).
+* **`unregister(parameters)`:** Se utiliza para dar de baja una tarjeta tokenizada (ver sección 5.2.8).
 
-## 5.2.1 **`authorization(Paymethods\Paymethod $paymethod, Amount $amount, array $array_options = array())`**
+## 5.2.1 **`authentication(Paymethods\Paymethod $paymethod, Amount $amount, array $array_options = array())`**
 
 ### Definición
- Este método de `Ecommerce` permite enviar una petición de venta a Sipay.
+ Este método de `Ecommerce` permite enviar una petición de autenticación a Sipay.
 ### Parámetros
 * **`paymethod`:**[_obligatorio_] Corresponde a una instancia  `Card`, `StoredCard` o `FastPay` que indica el método de pago a utilizar.
-* **`amount `:** [_obligatorio_] Corresponde a una instancia de `Amount` que representa el importe de la operación.
+* **`amount `:** [_obligatorio_] Corresponde a una instancia de `Amount` que representa el importe de la operación. Si utilizamos el importe 0, automáticamente se intentará realizar una operación de AVS.
 * **`array_options `:**
   * **`order `:** [_opcional_] Es un `string` que representa el ticket de la operación.
   * **`reconciliation `:** [_opcional_] Es un `string` que identifica la conciliación bancaria.
   * **`custom_01` :** [_opcional_] Es un `string` que representa un campo personalizable.
   * **`custom_02` :** [_opcional_] Es un `string` que representa un campo personalizable.
   * **`token`:** [_opcional_] Es un `string` que representa un token a almacenar. Se utiliza cuando el método de pago es de tipo `Card` o `Fpay`, y se desea asignar un token específico a la tarjeta utilizada.
-
+  * **`sca_exemptions`:** [_opcional_] Es un `string` que representa una de las exenciones disponibles de PSD2: LWV, TRA, COR, MIT.
+  * **`reason`:** [_opcional_] Es un `string` que representa la razón de negocio por la que se ha realizado una operación con exención MIT: R, I, C, D, E, H, M, N.
+  * **`sca_preference`:** [_opcional_] Es una lista de exenciones que serán aplicadas en orden de prioridad.
+  * **`previously_authenticated`:** [_opcional_] En caso de estar presente el campo, deberá llevar el valor de 'true' para indicar que queremos realizar una operación de autorización futura con la autenticación del presente.
+  
 ### Salida
-El método `authorization` devuelve un objeto `Authorization`.
+El método `authentication` devuelve un objeto `Authentication`.
 
 ### Ejemplo
-**- Autorización con tarjeta**
+**- Autenticación con tarjeta**
 ```php
   $amount = \Sipay\Amount(100, 'EUR'); // 1€
   $card = \Sipay\Paymethods\Card('4242424242424242', 2050, 2);
@@ -394,7 +409,23 @@ El método `authorization` devuelve un objeto `Authorization`.
    $auth = $ecommerce->authorization($fp, $amount);
 ```
 
-## 5.2.2 `cancellation(string $transaction_id)`
+## 5.2.2 **`confirm(request_id)`**
+
+### Definición
+ Este metódo permite realizar una captura de fondos (autorización) después de realizar el proceso de autenticación.
+### Parámetros
+* **`request_id`:**[_obligatorio_] Es el identificador de petición que fue retornado en la operación de autenticación. Se encuentra en el atributo request_id dentro del objetivo devuelto en la autenticación.   
+### Salida
+El método `confirm` devuelve un objeto `Confirm`.
+
+### Ejemplo
+**- Autenticación con tarjeta**
+```php
+  $auth = $ecommerce->authentication($card, $amount, $options);
+  $auth1 = $ecommerce->confirm(array('request_id' => $auth->request_id));
+```
+
+## 5.2.3 `cancellation(string $transaction_id)`
 
 ### Definición
 Este método permite enviar una petición de cancelación a Sipay
@@ -409,7 +440,7 @@ El método `cancellation` devuelve un objeto `Cancellation`.
 ```php
   $cancel = $ecommerce->cancellation('transaction_id');
 ```
-## 5.2.3 `refund($identificator, Amount $amount, array $array_options = array())`
+## 5.2.4 `refund($identificator, Amount $amount, array $array_options = array())`
 
 
 ### Definición
@@ -604,5 +635,3 @@ Este objeto no añade nada a lo indicado en los atributos comunes.
 
 #### 5.3.8 `Unregister`
 Este objeto no añade nada a lo descrito en los atributos comunes.
-#### 5.3.9 `Card`
-* **`cvv`:** Es un `string` identificador de la tarjeta.
